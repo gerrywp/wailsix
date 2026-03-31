@@ -1,0 +1,40 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build-wails",
+      "type": "shell",
+      "command": "wails",
+      "args": ["build", "-debug"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$go"]
+    },
+    {
+      "label": "wails-dev",
+      "type": "shell",
+      "command": "wails",
+      "args": ["dev"],
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "go",
+        "fileLocation": "absolute",
+        "pattern": {
+          "regexp": "^(.*?):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Building application for development",
+          "endsPattern": "Watching"
+        }
+      }
+    }
+  ]
+}

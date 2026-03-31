@@ -1,0 +1,25 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Wails App",
+      "type": "go",
+      "request": "launch",
+      "mode": "exec",
+      "program": "${workspaceFolder}/build/bin/wailsix.exe",
+      "args": [],
+      "preLaunchTask": "build-wails",
+      "env": {},
+      "cwd": "${workspaceFolder}",
+      "showLog": true
+    },
+    {
+      "name": "Debug Wails (wails dev)",
+      "type": "go",
+      "request": "attach",
+      "mode": "local",
+      "processId": "${command:pickProcess}",
+      "showLog": true
+    }
+  ]
+}

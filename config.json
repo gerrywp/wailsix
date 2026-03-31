@@ -1,0 +1,6 @@
+{
+  "esbAPI": {
+    "baseURL": "http://172.16.34.12:8080/esbrest/RestService/postrequest/",
+    "timeout": 30
+  }
+}
