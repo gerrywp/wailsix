@@ -40,20 +40,6 @@
   // 错误信息
   let error = ''
 
-  // 处理搜索按钮点击
-  async function handleSearch() {
-    console.log('搜索参数:', searchParams)
-    
-    // 重置状态
-    tableData = []
-    error = ''
-    loading = true
-    
-    try {
-      // 调用后端搜索API
-      const result = await Search(searchParams)
-      console.log('搜索结果:', result)
-      
   // 计算时效（小时）
   function calculateDuration(receiveTime, finishTime) {
     if (!receiveTime || !finishTime) return ''
@@ -89,7 +75,21 @@
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
   }
 
-  // 处理搜索结果，映射到表格字段
+  // 处理搜索按钮点击
+  async function handleSearch() {
+    console.log('搜索参数:', searchParams)
+    
+    // 重置状态
+    tableData = []
+    error = ''
+    loading = true
+    
+    try {
+      // 调用后端搜索API
+      const result = await Search(searchParams)
+      console.log('搜索结果:', result)
+      
+      // 处理搜索结果，映射到表格字段
       tableData = result.map(item => {
         return {
           ncnNumber: item.TASK_CODE || '',
@@ -144,28 +144,104 @@
   }
 </script>
 
-<div class="main-page">
+<div class="min-h-screen bg-gray-50 p-6">
   <!-- 顶部按钮区域 -->
-  <div class="top-buttons">
-    <button class="btn-add" on:click={handleAdd}>新增</button>
-    <button class="btn-add" on:click={handleEdit}>录入</button>
-    <button class="btn-view" on:click={handleView}>查看</button>
-    <button class="btn-toggle-search" on:click={toggleSearchSection}>
+  <div class="flex flex-wrap gap-3 mb-6">
+    <button 
+      class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+      on:click={handleAdd}
+    >
+      新增
+    </button>
+    <button 
+      class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-sm"
+      on:click={handleEdit}
+    >
+      录入
+    </button>
+    <button 
+      class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors shadow-sm"
+      on:click={handleView}
+    >
+      查看
+    </button>
+    <button 
+      class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors shadow-sm"
+      on:click={toggleSearchSection}
+    >
       {searchSectionVisible ? '隐藏搜索' : '显示搜索'}
     </button>
   </div>
 
   <!-- 搜索区域 -->
   {#if searchSectionVisible}
-  <div class="search-section">
-    <div class="search-row">
-      <div class="search-item">
-        <label>起始时间:</label>
-        <input type="date" bind:value={searchParams.startTime} />
+  <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">搜索条件</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <!-- 时间条件 -->
+      <div class="space-y-2">
+        <label for="startTime" class="block text-sm font-medium text-gray-700">起始时间</label>
+        <input 
+          id="startTime"
+          type="date" 
+          bind:value={searchParams.startTime} 
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
       </div>
-      <div class="search-item">
-        <label>工序:</label>
-        <select bind:value={searchParams.process}>
+      
+      <div class="space-y-2">
+        <label for="endTime" class="block text-sm font-medium text-gray-700">结束时间</label>
+        <input 
+          id="endTime"
+          type="date" 
+          bind:value={searchParams.endTime} 
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+      </div>
+
+      <!-- 基本信息 -->
+      <div class="space-y-2">
+        <label for="ncnNumber" class="block text-sm font-medium text-gray-700">NCN编号</label>
+        <input 
+          id="ncnNumber"
+          type="text" 
+          bind:value={searchParams.ncnNumber} 
+          placeholder="请输入NCN编号"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+      </div>
+      
+      <div class="space-y-2">
+        <label for="exceptionBatch" class="block text-sm font-medium text-gray-700">异常批号</label>
+        <input 
+          id="exceptionBatch"
+          type="text" 
+          bind:value={searchParams.exceptionBatch} 
+          placeholder="请输入异常批号"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+      </div>
+      
+      <div class="space-y-2">
+        <label for="productModel" class="block text-sm font-medium text-gray-700">产品型号</label>
+        <input 
+          id="productModel"
+          type="text" 
+          bind:value={searchParams.productModel} 
+          placeholder="请输入产品型号"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+      </div>
+
+      <!-- 流程信息 -->
+      <div class="space-y-2">
+        <label for="process" class="block text-sm font-medium text-gray-700">工序</label>
+        <select 
+          id="process"
+          bind:value={searchParams.process} 
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        >
           <option value="">请选择</option>
           <option value="成型">成型</option>
           <option value="电镀">电镀</option>
@@ -174,9 +250,14 @@
           <option value="表面处理">表面处理</option>
         </select>
       </div>
-      <div class="search-item">
-        <label>流程:</label>
-        <select bind:value={searchParams.flow}>
+      
+      <div class="space-y-2">
+        <label for="flow" class="block text-sm font-medium text-gray-700">流程</label>
+        <select 
+          id="flow"
+          bind:value={searchParams.flow} 
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        >
           <option value="">请选择</option>
           <option value="成型后检测">成型后检测</option>
           <option value="电镀后研磨">电镀后研磨</option>
@@ -185,49 +266,55 @@
           <option value="成型后水洗">成型后水洗</option>
         </select>
       </div>
-      <div class="search-item">
-        <label>风险层面:</label>
-        <select bind:value={searchParams.riskLevel}>
+      
+      <div class="space-y-2">
+        <label for="systemModule" class="block text-sm font-medium text-gray-700">系统/模块</label>
+        <select 
+          id="systemModule"
+          bind:value={searchParams.systemModule} 
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        >
+          <option value="">请选择</option>
+          <option value="SPC">SPC</option>
+          <option value="IPQC">IPQC</option>
+        </select>
+      </div>
+
+      <!-- 异常信息 -->
+      <div class="space-y-2">
+        <label for="riskLevel" class="block text-sm font-medium text-gray-700">风险层面</label>
+        <select 
+          id="riskLevel"
+          bind:value={searchParams.riskLevel} 
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        >
           <option value="">请选择</option>
           <option value="产品">产品</option>
           <option value="设备">设备</option>
           <option value="其他">其他</option>
         </select>
       </div>
-      <div class="search-item">
-        <label>申请者:</label>
-        <select bind:value={searchParams.applicant}>
+      
+      <div class="space-y-2">
+        <label for="riskGrade" class="block text-sm font-medium text-gray-700">风险等级</label>
+        <select 
+          id="riskGrade"
+          bind:value={searchParams.riskGrade} 
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        >
           <option value="">请选择</option>
-          <option value="王牌">王牌</option>
-          <option value="陈玉聪">陈玉聪</option>
+          <option value="A">A</option>
+          <option value="B">B</option>
         </select>
       </div>
-    </div>
-
-    <div class="search-row">
-      <div class="search-item">
-        <label>结束时间:</label>
-        <input type="date" bind:value={searchParams.endTime} />
-      </div>
-      <div class="search-item">
-        <label>系统/模块:</label>
-        <select bind:value={searchParams.systemModule}>
-          <option value="">请选择</option>
-          <option value="SPC">SPC</option>
-          <option value="IPQC">IPQC</option>
-        </select>
-      </div>
-      <div class="search-item">
-        <label>状态:</label>
-        <select bind:value={searchParams.status}>
-          <option value="">请选择</option>
-          <option value="未完成">未完成</option>
-          <option value="已完成">已完成</option>
-        </select>
-      </div>
-      <div class="search-item">
-        <label>主异常类别:</label>
-        <select bind:value={searchParams.mainExceptionCategory}>
+      
+      <div class="space-y-2">
+        <label for="mainExceptionCategory" class="block text-sm font-medium text-gray-700">主异常类别</label>
+        <select 
+          id="mainExceptionCategory"
+          bind:value={searchParams.mainExceptionCategory} 
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        >
           <option value="">请选择</option>
           <option value="产品缺陷">产品缺陷</option>
           <option value="过程监控">过程监控</option>
@@ -235,9 +322,14 @@
           <option value="异常2">异常2</option>
         </select>
       </div>
-      <div class="search-item">
-        <label>主缺陷:</label>
-        <select bind:value={searchParams.mainDefect}>
+      
+      <div class="space-y-2">
+        <label for="mainDefect" class="block text-sm font-medium text-gray-700">主缺陷</label>
+        <select 
+          id="mainDefect"
+          bind:value={searchParams.mainDefect} 
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        >
           <option value="">请选择</option>
           <option value="指控异常">指控异常</option>
           <option value="孔口异色">孔口异色</option>
@@ -248,327 +340,242 @@
           <option value="孔壁分离">孔壁分离</option>
         </select>
       </div>
-    </div>
 
-    <div class="search-row">
-      <div class="search-item">
-        <label>责任单位:</label>
-        <select bind:value={searchParams.responsibleUnit}>
-          <option value="">请选择</option>
-          <option value="新创元">新创元</option>
-          <option value="其他">其他</option>
-        </select>
-      </div>
-      <div class="search-item">
-        <label>OCAP流程:</label>
-        <select bind:value={searchParams.ocapProcess}>
-          <option value="">请选择</option>
-          <option value="流程1">流程1</option>
-          <option value="流程2">流程2</option>
-        </select>
-      </div>
-      <div class="search-item">
-        <label>异常设备:</label>
-        <select bind:value={searchParams.exceptionEquipment}>
-          <option value="">请选择</option>
-          <option value="设备1">设备1</option>
-          <option value="设备2">设备2</option>
-        </select>
-      </div>
-      <div class="search-item">
-        <label>风险等级:</label>
-        <select bind:value={searchParams.riskGrade}>
-          <option value="">请选择</option>
-          <option value="A">A</option>
-          <option value="B">B</option>
-        </select>
-      </div>
-      <div class="search-item">
-        <label>责任人:</label>
-        <select bind:value={searchParams.responsiblePerson}>
+      <!-- 人员信息 -->
+      <div class="space-y-2">
+        <label for="applicant" class="block text-sm font-medium text-gray-700">申请者</label>
+        <select 
+          id="applicant"
+          bind:value={searchParams.applicant} 
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        >
           <option value="">请选择</option>
           <option value="王牌">王牌</option>
           <option value="陈玉聪">陈玉聪</option>
         </select>
       </div>
+      
+      <div class="space-y-2">
+        <label for="responsibleUnit" class="block text-sm font-medium text-gray-700">责任单位</label>
+        <select 
+          id="responsibleUnit"
+          bind:value={searchParams.responsibleUnit} 
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        >
+          <option value="">请选择</option>
+          <option value="新创元">新创元</option>
+          <option value="其他">其他</option>
+        </select>
+      </div>
+      
+      <div class="space-y-2">
+        <label for="responsiblePerson" class="block text-sm font-medium text-gray-700">责任人</label>
+        <select 
+          id="responsiblePerson"
+          bind:value={searchParams.responsiblePerson} 
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        >
+          <option value="">请选择</option>
+          <option value="王牌">王牌</option>
+          <option value="陈玉聪">陈玉聪</option>
+        </select>
+      </div>
+
+      <!-- 其他信息 -->
+      <div class="space-y-2">
+        <label for="status" class="block text-sm font-medium text-gray-700">状态</label>
+        <select 
+          id="status"
+          bind:value={searchParams.status} 
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        >
+          <option value="">请选择</option>
+          <option value="未完成">未完成</option>
+          <option value="已完成">已完成</option>
+          <option value="审核中">审核中</option>
+        </select>
+      </div>
+      
+      <div class="space-y-2">
+        <label for="ocapProcess" class="block text-sm font-medium text-gray-700">OCAP流程</label>
+        <select 
+          id="ocapProcess"
+          bind:value={searchParams.ocapProcess} 
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        >
+          <option value="">请选择</option>
+          <option value="流程1">流程1</option>
+          <option value="流程2">流程2</option>
+        </select>
+      </div>
+      
+      <div class="space-y-2">
+        <label for="exceptionEquipment" class="block text-sm font-medium text-gray-700">异常设备</label>
+        <select 
+          id="exceptionEquipment"
+          bind:value={searchParams.exceptionEquipment} 
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        >
+          <option value="">请选择</option>
+          <option value="设备1">设备1</option>
+          <option value="设备2">设备2</option>
+        </select>
+      </div>
     </div>
 
-    <div class="search-row">
-      <div class="search-item">
-        <label>NCN编号:</label>
-        <input type="text" bind:value={searchParams.ncnNumber} />
-      </div>
-      <div class="search-item">
-        <label>异常批号:</label>
-        <input type="text" bind:value={searchParams.exceptionBatch} />
-      </div>
-      <div class="search-item">
-        <label>产品型号:</label>
-        <input type="text" bind:value={searchParams.productModel} />
-      </div>
-      <div class="search-item">
-        <button class="btn-search" on:click={handleSearch}>查询</button>
-      </div>
-      <div class="search-item">
-        <button class="btn-reset" on:click={handleReset}>重置</button>
-      </div>
+    <!-- 搜索和重置按钮 -->
+    <div class="flex flex-wrap gap-3 mt-6">
+      <button 
+        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+        on:click={handleSearch}
+        disabled={loading}
+      >
+        {loading ? '搜索中...' : '查询'}
+      </button>
+      <button 
+        class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors shadow-sm"
+        on:click={handleReset}
+      >
+        重置
+      </button>
     </div>
   </div>
   {/if}
 
+  <!-- 错误信息显示 -->
+  {#if error}
+  <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+    {error}
+  </div>
+  {/if}
+
   <!-- 表格区域 -->
-  <div class="table-section">
-    <table>
-      <thead>
-        <tr>
-          <th>NCN编号</th>
-          <th>风险层面</th>
-          <th>主异常</th>
-          <th>主缺陷</th>
-          <th>次异常</th>
-          <th>次缺陷</th>
-          <th>工序描述</th>
-          <th>流程名称</th>
-          <th>风险等级</th>
-          <th>申请者</th>
-          <th>来源系统</th>
-          <th>责任单位</th>
-          <th>责任人</th>
-          <th>来源单号</th>
-          <th>本月发生次数</th>
-          <th>状态</th>
-          <th>审核备注</th>
-          <th>时效(小时)</th>
-          <th>更新时间</th>
-          <th>建单方式</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each tableData as row, index}
-          <tr class={index % 2 === 0 ? 'even' : 'odd'}>
-            <td>{row.ncnNumber}</td>
-            <td>{row.riskLevel}</td>
-            <td>{row.mainException}</td>
-            <td>{row.mainDefect}</td>
-            <td>{row.secondaryException}</td>
-            <td>{row.secondaryDefect}</td>
-            <td>{row.processDescription}</td>
-            <td>{row.flowName}</td>
-            <td>{row.riskGrade}</td>
-            <td>{row.applicant}</td>
-            <td>{row.systemModule}</td>
-            <td>{row.responsibleUnit}</td>
-            <td>{row.responsiblePerson}</td>
-            <td>{row.sourceCode}</td>
-            <td>{row.monthlyCount}</td>
-            <td>{row.status}</td>
-            <td>{row.auditRemark}</td>
-            <td>{row.duration}</td>
-            <td>{row.updateTime}</td>
-            <td>{row.createWay}</td>
+  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              NCN编号
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              风险层面
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              主异常
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              主缺陷
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              次异常
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              次缺陷
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              工序描述
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              流程名称
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              风险等级
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              申请者
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              来源系统
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              责任单位
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              责任人
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              来源单号
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              本月发生次数
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              状态
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              审核备注
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              时效(小时)
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              更新时间
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              建单方式
+            </th>
           </tr>
-        {/each}
-      </tbody>
-    </table>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          {#if loading}
+            <tr>
+              <td colspan={20} class="px-6 py-12 text-center text-gray-500">
+                <div class="flex items-center justify-center">
+                  <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mr-3"></div>
+                  <span>正在加载数据...</span>
+                </div>
+              </td>
+            </tr>
+          {:else if tableData.length === 0}
+            <tr>
+              <td colspan={20} class="px-6 py-12 text-center text-gray-500">
+                暂无数据
+              </td>
+            </tr>
+          {:else}
+            {#each tableData as row, index}
+              <tr class={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.ncnNumber}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.riskLevel}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.mainException}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.mainDefect}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.secondaryException}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.secondaryDefect}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.processDescription}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.flowName}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.riskGrade}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.applicant}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.systemModule}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.responsibleUnit}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.responsiblePerson}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.sourceCode}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.monthlyCount}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.status}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.auditRemark}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.duration}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.updateTime}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.createWay}</td>
+              </tr>
+            {/each}
+          {/if}
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 
 <style>
-  .main-page {
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    background-color: #f5f7fa;
-    min-height: 100vh;
-    box-sizing: border-box;
+  .animate-spin {
+    animation: spin 1s linear infinite;
   }
-
-  /* 顶部按钮样式 */
-  .top-buttons {
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: flex-start;
-  }
-
-  .btn-add, .btn-view, .btn-search, .btn-reset, .btn-toggle-search {
-    padding: 8px 16px;
-    margin-right: 10px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s;
-  }
-
-  .btn-toggle-search {
-    background-color: #9C27B0;
-    color: white;
-  }
-
-  .btn-toggle-search:hover {
-    background-color: #7B1FA2;
-  }
-
-  .btn-add {
-    background-color: #4CAF50;
-    color: white;
-  }
-
-  .btn-add:hover {
-    background-color: #45a049;
-  }
-
-  .btn-view {
-    background-color: #2196F3;
-    color: white;
-  }
-
-  .btn-view:hover {
-    background-color: #0b7dda;
-  }
-
-  .btn-search {
-    background-color: #2196F3;
-    color: white;
-  }
-
-  .btn-search:hover {
-    background-color: #0b7dda;
-  }
-
-  .btn-reset {
-    background-color: #f44336;
-    color: white;
-  }
-
-  .btn-reset:hover {
-    background-color: #da190b;
-  }
-
-  /* 搜索区域样式 */
-  .search-section {
-    background-color: white;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    overflow-x: auto;
-    white-space: nowrap;
-    width: 100%; /* 使搜索区域宽度横铺满屏幕 */
-    box-sizing: border-box; /* 确保内边距不会增加总宽度 */
-  }
-
-  .search-row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-    align-items: center;
-  }
-
-  .search-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    /* 为每个搜索项设置固定宽度，确保所有项对齐 */
-    width: 280px; /* 标签宽度 + 间隙 + 输入框宽度 = 70px + 6px + 200px = 280px */
-  }
-
-  /* 调整按钮所在的搜索项，使按钮居中对齐 */
-  .search-item:has(.btn-search),
-  .search-item:has(.btn-reset) {
-    justify-content: flex-start;
-    /* 保持与其他搜索项相同的固定宽度，确保对齐 */
-    width: 65px;
-  }
-
-  .search-item label {
-    font-size: 13px;
-    color: #333;
-    width: 70px; /* 固定标签宽度，确保所有标签对齐 */
-    text-align: right;
-  }
-
-  .search-item input,
-  .search-item select {
-    padding: 5px 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 13px;
-    width: 200px;
-  }
-
-  .search-item input:focus,
-  .search-item select:focus {
-    outline: none;
-    border-color: #2196F3;
-  }
-
-  .search-buttons {
-    margin-top: 15px;
-  }
-
-  /* 表格区域样式 */
-  .table-section {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    max-height: 456px; /* 你想要的固定高度，可修改 */
-    overflow-y: auto; /* 垂直滚动 */
-    overflow-x: auto; /* 列太多时水平滚动 */
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    white-space: nowrap; /* 所有文字强制不换行 */
-  }
-  /* 固定表头核心样式 */
-  table thead {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-  }
-  table th,
-  table td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-    font-size: 14px;
-    color:#333;
-    white-space: nowrap; /* 所有文字强制不换行 */
-  }
-
-  table th {
-    background-color: #f2f2f2;
-    font-weight: bold;
-    color: #333;
-  }
-
-  table tbody tr:hover {
-    background-color: #f5f5f5;
-  }
-
-  table tbody tr.even {
-    background-color: #fafafa;
-  }
-
-  /* 响应式设计 */
-  @media (max-width: 768px) {
-    .search-row {
-      flex-wrap: wrap;
+  
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
     }
-
-    .search-item {
-      flex-basis: calc(50% - 10px);
-    }
-
-    .table-section {
-      font-size: 12px;
-    }
-
-    table th,
-    table td {
-      padding: 8px;
+    to {
+      transform: rotate(360deg);
     }
   }
 </style>
