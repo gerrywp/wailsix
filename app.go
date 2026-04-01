@@ -83,6 +83,12 @@ func (a *App) startup(ctx context.Context) {
 	runtime.WindowMaximise(ctx)
 }
 
+// navigateTo 运行时方法，导航到指定页面
+func (a *App) navigateTo(page string) {
+	// 发送事件到前端
+	runtime.EventsEmit(a.ctx, "navigate", page)
+}
+
 // SetConfig 设置配置
 func (a *App) SetConfig(config *Config) {
 	a.config = config
