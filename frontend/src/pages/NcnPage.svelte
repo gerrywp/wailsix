@@ -149,9 +149,9 @@
   }
 </script>
 
-<main class="min-h-screen bg-gray-50 p-6">
+<main class="min-h-screen bg-gray-50 p-1.5">
   <!-- 顶部按钮区域 -->
-  <div class="flex flex-wrap gap-3 mb-6">
+  <div class="flex flex-wrap gap-3 mb-1.5">
     <button
       class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
       onclick={handleAdd}
@@ -180,7 +180,7 @@
 
   <!-- 搜索区域 -->
   {#if searchSectionVisible}
-    <section class="bg-white rounded-lg shadow-sm p-4 mb-4">
+    <section class="bg-white rounded-lg shadow-sm p-2 mb-2">
       <div
         class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2"
       >
