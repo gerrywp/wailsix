@@ -2,7 +2,7 @@
   import { Search } from "../../wailsjs/go/main/Ncn.js";
 
   // 搜索区域显示/隐藏状态
-  let searchSectionVisible = true;
+  let searchSectionVisible = $state(true);
 
   // 切换搜索区域显示/隐藏
   function toggleSearchSection() {
@@ -10,7 +10,7 @@
   }
 
   // 页面数据
-  let searchParams = {
+  let searchParams = $state({
     startTime: "",
     endTime: "",
     ncnNumber: "",
@@ -29,17 +29,17 @@
     exceptionEquipment: "",
     riskGrade: "",
     responsiblePerson: "",
-  };
+  });
 
   // 表格数据
-  let tableData = [];
+  let tableData = $state([]);
 
   // 加载状态
-  let loading = false;
+  let loading = $state(false);
 
   // 错误信息
-  let error = "";
-  let isRequired={};
+  let error = $state("");
+  let isRequired = $state({ startTime: false, endTime: false });
   // 计算时效（小时）
   function calculateDuration(receiveTime, finishTime) {
     if (!receiveTime || !finishTime) return "";
@@ -57,7 +57,10 @@
 
     return durationHours;
   }
-
+  function toggleState(value) {
+    searchParams.startTime = value;
+    isRequired.startTime = !value;
+  }
   // 格式化时间
   function formatDateTime(dateTimeStr) {
     if (!dateTimeStr) return "";
@@ -74,17 +77,12 @@
 
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   }
-
   // 处理搜索按钮点击
   async function handleSearch() {
-    console.log("搜索参数:", searchParams);
-
     // 重置状态
     tableData = [];
     error = "";
-    if(!searchParams.startTime && !searchParams.endTime) {
-      isRequired.startTime = true;
-      isRequired.endTime = true;
+    if (!searchParams.startTime || !searchParams.endTime) {
       return;
     }
     loading = true;
@@ -194,8 +192,10 @@
           <input
             id="startTime"
             type="date"
-            bind:value={searchParams.startTime}
-            class="{isRequired.startTime ? 'border-red-500' : ''} flex-1 px-2 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            bind:value={()=>searchParams.startTime,toggleState}
+            class="{isRequired.startTime
+              ? 'border-red-500'
+              : ''} flex-1 px-2 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
@@ -209,7 +209,9 @@
             id="endTime"
             type="date"
             bind:value={searchParams.endTime}
-            class="{isRequired.endTime ? 'border-red-500' : ''} flex-1 px-2 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            class="{isRequired.endTime
+              ? 'border-red-500'
+              : ''} flex-1 px-2 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
@@ -224,7 +226,8 @@
             id="ncnNumber"
             type="text"
             bind:value={searchParams.ncnNumber}
-            placeholder="NCN编号" required
+            placeholder="NCN编号"
+            required
             class="flex-1 px-2 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>

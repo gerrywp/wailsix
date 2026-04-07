@@ -56,7 +56,7 @@
 </script>
 <div class="w-full h-full flex flex-col">
   <!-- 标签栏 -->
-  <div class="flex gap-1 bg-surface-100 border-b border-surface-300 px-1">
+  <div class="flex gap-1 bg-gray-50 border-b border-surface-300 px-1 sticky top-0 z-10">
     {#each tabs as tab (tab.id)}
       <div role="button" tabindex="0"
         class="relative flex items-center gap-2 px-3 py-1.5 rounded-t-md cursor-pointer whitespace-nowrap text-sm
@@ -77,7 +77,7 @@
   </div>
 
   <!-- 内容区域 -->
-  <div class="flex-1 bg-white overflow-auto">
+  <div class="flex-1 bg-white overflow-auto pt-1">
     {#each tabs as tab (tab.id)}
       {#if activeTab === tab.id}
         <tab.component />
