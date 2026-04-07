@@ -1,88 +1,87 @@
 <script>
-  import { Tabs } from "@skeletonlabs/skeleton-svelte";
-  import { X } from "@lucide/svelte"; // 关闭图标
-  import { onMount } from "svelte";
-  import Home from "./Home.svelte"; // 导入默认 tab 组件
+  import { X } from "@lucide/svelte";
+  import { onMount, tick } from "svelte";
+  import Home from "./Home.svelte";
   import NcnPage from "./NcnPage.svelte";
   import { EventsOn } from "../../wailsjs/runtime/runtime.js";
 
   let activeTab = $state("");
   let tabs = $state([]);
 
-  // 初始化默认 tab
+  const routers = [
+    { id: "home", title: "主页", component: Home },
+    { id: "ncnpage", title: "NCN页面", component: NcnPage },
+  ];
+
   onMount(() => {
     if (tabs.length === 0) {
-      // 默认打开主页 tab
-      const defaultTab = {
-        id: "home",
-        title: "主页",
-        component: Home,
-      };
+      const defaultTab = { id: "home", title: "主页", component: Home };
       tabs = [defaultTab];
       activeTab = defaultTab.id;
     }
+
     const off = EventsOn("navigate", (page) => {
-      let tabToOpen = routers.find((r) => r.id === page);
+      const tabToOpen = routers.find((r) => r.id === page);
       if (!tabToOpen) return;
       openTab(tabToOpen);
     });
     return off;
   });
-  const routers = [
-    { id: "home", title: "主页", component: Home },
-    { id: "ncnpage", title: "NCN页面", component: NcnPage },
-  ];
-  function openTab({ id, title, component }) {
+
+  async function openTab({ id, title, component }) {
     const exist = tabs.find((x) => x.id === id);
     if (exist) {
       activeTab = id;
       return;
     }
+
     tabs = [...tabs, { id, title, component }];
+    await tick();
     activeTab = id;
   }
-  $inspect(tabs);
+
   function closeTab(e, id) {
-    e.stopPropagation(); // 阻止触发 tab 切换
-    if (tabs.length <= 1) {
-      return;
-    }
-    const currentIndex = tabs.findIndex((t) => t.id === id);
-    if (currentIndex === 0) return; // 不允许关闭第一个 tab
+    e.stopPropagation();
+    if (tabs.length <= 1) return;
+    const idx = tabs.findIndex(t => t.id === id);
+    if (idx === 0) return;
+
+    // 切换激活项
     if (activeTab === id) {
-      // 如果关闭的是当前激活的 tab，需要确定新的激活 tab
-      if (currentIndex > 0) {
-        // 如果不是第一个 tab，激活前一个
-        activeTab = tabs[currentIndex - 1].id;
-      }
+      activeTab = tabs[idx - 1].id;
     }
-    // 过滤掉要关闭的 tab
-    tabs = tabs.filter((t) => t.id !== id);
+
+    tabs = tabs.filter(t => t.id !== id);
   }
 </script>
-
-<!--Skeleton Tabs-->
-<Tabs value={activeTab} onValueChange={(e) => (activeTab = e.value)}>
-  <Tabs.List class="bg-surface-100 border-b border-surface-300 m-0">
+<div class="w-full h-full flex flex-col">
+  <!-- 标签栏 -->
+  <div class="flex gap-1 bg-surface-100 border-b border-surface-300 px-1">
     {#each tabs as tab (tab.id)}
-      <Tabs.Trigger value={tab.id} class="flex items-center gap-2 px-1">
+      <div role="button" tabindex="0"
+        class="relative flex items-center gap-2 px-3 py-1.5 rounded-t-md cursor-pointer whitespace-nowrap text-sm
+          {activeTab === tab.id ? 'bg-blue-600 text-white border border-b-0 border-surface-300' : 'bg-transparent hover:bg-surface-200'}"
+        onclick={() => activeTab = tab.id} onkeydown={(e) => e.key === 'Enter' && (activeTab = tab.id)}
+      >
         {tab.title}
-        <!-- 关闭按钮 -->
-        <button
-          onclick={(e) => closeTab(e, tab.id)}
-          class="hover:bg-surface-300 rounded-full p-0.5 text-sm transition-colors"
-        >
-          <X size={14} />
-        </button>
-      </Tabs.Trigger>
+        {#if tab.id !== 'home'}
+          <button
+            onclick={(e) => closeTab(e, tab.id)}
+            class="hover:bg-surface-300 rounded-full p-0.5 transition-colors"
+          >
+            <X size={14} />
+          </button>
+        {/if}
+      </div>
     {/each}
-    <Tabs.Indicator />
-  </Tabs.List>
+  </div>
 
-  <!-- 内容面板 -->
-  {#each tabs as tab (tab.id)}
-    <Tabs.Content value={tab.id}>
-      <tab.component />
-    </Tabs.Content>
-  {/each}
-</Tabs>
+  <!-- 内容区域 -->
+  <div class="flex-1 bg-white overflow-auto">
+    {#each tabs as tab (tab.id)}
+      {#if activeTab === tab.id}
+        <tab.component />
+      {/if}
+    {/each}
+  </div>
+</div>
