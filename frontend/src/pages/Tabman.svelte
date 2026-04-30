@@ -2,15 +2,16 @@
   import { X } from "@lucide/svelte";
   import { onMount, tick } from "svelte";
   import Home from "./Home.svelte";
-  import NcnPage from "./NcnPage.svelte";
-  import { EventsOn } from "../../wailsjs/runtime/runtime.js";
+  import NCN from "./Ncn.svelte";
+  import IPQC from "./IPQC.svelte";
 
   let activeTab = $state("");
   let tabs = $state([]);
   let { logout } = $props();
   const routers = [
     { id: "home", title: "主页", component: Home },
-    { id: "ncnpage", title: "NCN页面", component: NcnPage },
+    { id: "ncn", title: "NCN页面", component: NCN },
+    { id: "ipqc", title: "IPQC页面", component: IPQC },
   ];
 
   onMount(() => {

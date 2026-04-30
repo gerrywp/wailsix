@@ -13,7 +13,7 @@
       >
         <button
           class="w-full py-3 px-4 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors duration-300"
-          onclick={() => navigate("ncnpage")}>Ncn单据运维</button
+          onclick={() => navigate("ncn")}>Ncn单据运维</button
         >
       </div>
       <div
@@ -21,7 +21,7 @@
       >
         <button
           class="w-full py-3 px-4 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors duration-300"
-          onclick={() => navigate("ipqcpage")}>IPQC单据运维</button
+          onclick={() => navigate("ipqc")}>IPQC单据运维</button
         >
       </div>
     </div>
