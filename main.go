@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"embed"
+	"wailsix/models"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -13,6 +14,12 @@ import (
 var assets embed.FS
 
 func main() {
+    // 初始化 Oracle
+	if err := models.InitDB(); err != nil {
+		panic("Oracle 连接失败: " + err.Error())
+	}
+	var user=models.AdUser{} // 确保 AdUser 模型被加载
+	models.DB.Where("OBJECT_RRN = ?", 306381384036335616).First(&user)
 	// Create an instance of the app structure
 	app := NewApp()
 	ncn := NewNcn()
