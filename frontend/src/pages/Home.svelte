@@ -2,7 +2,7 @@
   let { navigate } = $props();
 </script>
 
-<div class="h-full bg-linear-to-br from-blue-50 to-indigo-100">
+<div class="h-full">
   <div class="max-w-4xl mx-auto">
     <h1 class="text-3xl font-bold text-center text-indigo-800 mb-8">
       欢迎使用单据运维系统

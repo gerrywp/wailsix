@@ -147,7 +147,7 @@
   }
 </script>
 
-<main class="min-h-screen bg-gray-50 p-1.5">
+<main class="h-full bg-gray-50 p-1.5">
   <!-- 顶部按钮区域 -->
   <div class="flex flex-wrap gap-3 mb-1.5">
     <button
@@ -192,7 +192,7 @@
           <input
             id="startTime"
             type="date"
-            bind:value={()=>searchParams.startTime,toggleState}
+            bind:value={() => searchParams.startTime, toggleState}
             class="{isRequired.startTime
               ? 'border-red-500'
               : ''} flex-1 px-2 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
