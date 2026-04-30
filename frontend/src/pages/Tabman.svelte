@@ -7,7 +7,7 @@
 
   let activeTab = $state("");
   let tabs = $state([]);
-
+  let { logout } = $props();
   const routers = [
     { id: "home", title: "主页", component: Home },
     { id: "ncnpage", title: "NCN页面", component: NcnPage },
@@ -19,15 +19,12 @@
       tabs = [defaultTab];
       activeTab = defaultTab.id;
     }
-
-    const off = EventsOn("navigate", (page) => {
-      const tabToOpen = routers.find((r) => r.id === page);
-      if (!tabToOpen) return;
-      openTab(tabToOpen);
-    });
-    return off;
   });
-
+  function navigate(page) {
+    const tabToOpen = routers.find((r) => r.id === page);
+    if (!tabToOpen) return;
+    openTab(tabToOpen);
+  }
   async function openTab({ id, title, component }) {
     const exist = tabs.find((x) => x.id === id);
     if (exist) {
@@ -43,7 +40,7 @@
   function closeTab(e, id) {
     e.stopPropagation();
     if (tabs.length <= 1) return;
-    const idx = tabs.findIndex(t => t.id === id);
+    const idx = tabs.findIndex((t) => t.id === id);
     if (idx === 0) return;
 
     // 切换激活项
@@ -51,20 +48,28 @@
       activeTab = tabs[idx - 1].id;
     }
 
-    tabs = tabs.filter(t => t.id !== id);
+    tabs = tabs.filter((t) => t.id !== id);
   }
 </script>
-<div class="w-full h-full flex flex-col">
+
+<div class="w-full h-screen flex flex-col">
   <!-- 标签栏 -->
-  <div class="flex gap-1 bg-gray-50 border-b border-surface-300 px-1 sticky top-0 z-10">
+  <div
+    class="flex gap-1 bg-gray-50 border-b border-surface-300 px-1 sticky top-0 z-10"
+  >
     {#each tabs as tab (tab.id)}
-      <div role="button" tabindex="0"
+      <div
+        role="button"
+        tabindex="0"
         class="relative flex items-center gap-2 px-3 py-1.5 rounded-t-md cursor-pointer whitespace-nowrap text-sm
-          {activeTab === tab.id ? 'bg-blue-600 text-white border border-b-0 border-surface-300' : 'bg-transparent hover:bg-surface-200'}"
-        onclick={() => activeTab = tab.id} onkeydown={(e) => e.key === 'Enter' && (activeTab = tab.id)}
+          {activeTab === tab.id
+          ? 'bg-blue-600 text-white border border-b-0 border-surface-300'
+          : 'bg-transparent hover:bg-surface-200'}"
+        onclick={() => (activeTab = tab.id)}
+        onkeydown={(e) => e.key === "Enter" && (activeTab = tab.id)}
       >
         {tab.title}
-        {#if tab.id !== 'home'}
+        {#if tab.id !== "home"}
           <button
             onclick={(e) => closeTab(e, tab.id)}
             class="hover:bg-surface-300 rounded-full p-0.5 transition-colors"
@@ -74,13 +79,20 @@
         {/if}
       </div>
     {/each}
+    <!-- 右侧 退出按钮（所有页面都显示） -->
+    <button
+      onclick={logout}
+      class="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600"
+    >
+      退出登录
+    </button>
   </div>
 
   <!-- 内容区域 -->
   <div class="flex-1 bg-white overflow-auto pt-1">
     {#each tabs as tab (tab.id)}
       {#if activeTab === tab.id}
-        <tab.component />
+        <tab.component {navigate} />
       {/if}
     {/each}
   </div>

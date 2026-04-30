@@ -5,32 +5,16 @@
   import { onMount } from "svelte";
 
   let isLoggedIn = $state(false);
+  function logout() {
+    isLoggedIn = false;
+  }
   // Listen for Login Success Events
   function handleLoginSuccess() {
     isLoggedIn = true;
   }
-  // const routes = {
-  //   "/": Tabman,
-  //   "/login": Login,
-  //   "/ncnpage":NcnPage,
-  //   "/tabman":Home,
-  // };
-  // $effect(() => {
-  //   if (isLoggedIn) {
-
-  //   } else {
-  //     push("/login");
-  //   }
-  // });
   onMount(() => {
-    const exitEvent = EventsOn("exit", () => {
-      isLoggedIn = false;
-      return;
-      //window.location.hash = page;
-    });
     window.addEventListener("login-success", handleLoginSuccess);
     return () => {
-      exitEvent(); // 注销事件监听器
       window.removeEventListener("login-success", handleLoginSuccess);
     };
   });
@@ -40,5 +24,5 @@
 {#if !isLoggedIn}
   <Login />
 {:else}
-  <Tabman />
+  <Tabman {logout} />
 {/if}

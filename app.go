@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/wailsapp/wails/v2/pkg/menu"
-	"github.com/wailsapp/wails/v2/pkg/menu/keys"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
@@ -81,41 +80,10 @@ func NewApp() *App {
 	}
 }
 
-// showMenu 显示菜单
-func (a *App) showMenu() {
-	runtime.MenuSetApplicationMenu(a.ctx, appMenu)
-}
-
-// hideMenu 隐藏菜单
-func (a *App) hideMenu() {
-	emptyMenu := menu.NewMenu()
-	runtime.MenuSetApplicationMenu(a.ctx, emptyMenu)
-}
-
 // startup is called when the app starts. The context is saved
 // so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
-	// Create application menu
-	appMenu = menu.NewMenu()
-	var startMenu = appMenu.AddSubmenu("开始菜单")
-
-	startMenu.AddText("退出", keys.CmdOrCtrl("q"), func(_ *menu.CallbackData) {
-		a.hideMenu()
-		// 发送事件到前端
-		runtime.EventsEmit(a.ctx, "exit")
-	})
-	functionalMenu := appMenu.AddSubmenu("功能区")
-	functionalMenu.AddText("主页", nil, func(_ *menu.CallbackData) {
-		a.navigateTo("home")
-	})
-	functionalMenu.AddText("NCN管理", nil, func(_ *menu.CallbackData) {
-		a.navigateTo("ncnpage")
-	})
-	settingsMenu := appMenu.AddSubmenu("系统设置")
-	settingsMenu.AddText("设置", nil, func(_ *menu.CallbackData) {
-		a.navigateTo("settings")
-	})
 	runtime.WindowMaximise(ctx)
 }
 
@@ -191,7 +159,6 @@ func (a *App) Login(username, password string) bool {
 
 	// 检查登录结果，根据实际响应格式
 	if respData.Response.Header.Result == "SUCCESS" && respData.Response.Body.LoginResult {
-		a.showMenu()
 		return true
 	}
 	fmt.Printf("登录失败: 结果=%s, 登录结果=%v\n", respData.Response.Header.Result, respData.Response.Body.LoginResult)
