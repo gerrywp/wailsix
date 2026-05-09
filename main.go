@@ -18,12 +18,10 @@ func main() {
 	if err := models.InitDB(); err != nil {
 		panic("Oracle 连接失败: " + err.Error())
 	}
-	var user=models.AdUser{} // 确保 AdUser 模型被加载
-	models.DB.Where("OBJECT_RRN = ?", 306381384036335616).First(&user)
 	// Create an instance of the app structure
 	app := NewApp()
 	ncn := NewNcn()
-
+	ipqc := NewIpqc()
 	// Create application with options
 	err := wails.Run(&options.App{
 		Title:  "wailsix",
@@ -40,6 +38,7 @@ func main() {
 		Bind: []interface{}{
 			app,
 			ncn,
+			ipqc,
 		},
 	})
 
